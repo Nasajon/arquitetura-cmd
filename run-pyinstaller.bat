@@ -1,0 +1,1 @@
+pyinstaller --hidden-import pg8000 --onefile --console --name "suporte-console" ./__main__.py

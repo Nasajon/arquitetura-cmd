@@ -1,0 +1,2 @@
+empacotar:
+	python empacotar.py
