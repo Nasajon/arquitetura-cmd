@@ -1,0 +1,395 @@
+Tome como exemplo as tabelas abaixo, e o respectivos DTOs que foram programados a partir das mesmas:
+
+create table endereco (
+	-- Atributos da entidade
+	id varchar(36) not null,
+	participante varchar(30) not null,
+	descricao varchar(150),
+	cep varchar(15) not null,
+	tipo_logradouro varchar(10) not null,
+	logradouro varchar(250) not null,
+	numero varchar(10),
+	complemento varchar(250),
+	referencia varchar(250),
+	bairro varchar(60),
+	uf varchar(2),
+	pais varchar(2),
+	ibge varchar(8),
+	cidade varchar(60),
+	local boolean,
+	entrega boolean,
+	cobranca boolean,
+	comercial boolean,
+	ordem smallint,
+	-- Atributos de auditoria
+	criado_em datetime not null default now(),
+	criado_por varchar(150) not null,
+	atualizado_em datetime not null default now(),
+	atualizado_por varchar(150) not null,
+	apagado_em datetime,
+	apagado_por varchar(150),
+	-- Atributos de segmentação dos dados
+	grupo_empresarial varchar(36) not null,
+	tenant bigint not null,
+	-- Constraints
+	constraint pk_endereco PRIMARY KEY (tenant, grupo_empresarial, id),
+	-- unique key (tenant, grupo_empresarial, participante, pais, cep, logradouro, numero, complemento),
+	-- constraint foreign key fk_endereco_participante (tenant, grupo_empresarial, participante) references participante_unico (tenant, grupo_empresarial, id)
+	SHARD KEY (tenant)
+);
+
+
+import datetime
+import uuid
+
+from nsj_rest_lib.decorator.dto import DTO
+from nsj_rest_lib.descriptor.dto_field import DTOField
+from nsj_rest_lib.descriptor.dto_field_validators import DTOFieldValidators
+from nsj_rest_lib.dto.dto_base import DTOBase
+
+
+@DTO()
+class EnderecoDTO(DTOBase):
+
+    # Atributos gerais
+    id: uuid.UUID = DTOField(pk=True, resume=True, not_null=True, strip=True,
+                             min=1, max=36, validator=DTOFieldValidators().validate_uuid, default_value=uuid.uuid4)
+    descricao: str = DTOField(strip=True, min=1, max=150)
+    cep: str = DTOField(resume=True, not_null=True, strip=True, min=1, max=15)
+    # TODO Refatorar para enumerado
+    tipo_logradouro: str = DTOField(
+        resume=True, not_null=True, strip=True, min=1, max=10)
+    logradouro: str = DTOField(
+        resume=True, not_null=True, strip=True, min=1, max=250)
+    numero: str = DTOField(resume=True, strip=True, min=1, max=10)
+    complemento: str = DTOField(resume=True, strip=True, min=1, max=250)
+    referencia: str = DTOField(strip=True, min=1, max=250)
+    bairro: str = DTOField(resume=True, strip=True, min=1, max=60)
+    uf: str = DTOField(resume=True, strip=True, min=2, max=2)
+    pais: str = DTOField(strip=True, min=2, max=2)
+    ibge: str = DTOField(strip=True, min=1, max=8)
+    cidade: str = DTOField(strip=True, min=1, max=60)
+    local: bool = DTOField()
+    entrega: bool = DTOField()
+    cobranca: bool = DTOField()
+    comercial: bool = DTOField()
+    ordem: int = DTOField(max=255)
+    # Atributos de auditoria
+    criado_em: datetime.datetime = DTOField(
+        resume=True, not_null=True, default_value=datetime.datetime.now)
+    criado_por: str = DTOField(resume=True, not_null=False, strip=True,
+                               min=1, max=150, validator=DTOFieldValidators().validate_email)
+    atualizado_em: datetime.datetime = DTOField(
+        resume=True, not_null=True, default_value=datetime.datetime.now)
+    atualizado_por: str = DTOField(resume=True, not_null=False, strip=True,
+                                   min=1, max=150, validator=DTOFieldValidators().validate_email)
+    apagado_em: datetime.datetime = DTOField()
+    apagado_por: str = DTOField(
+        strip=True, min=1, max=150, validator=DTOFieldValidators().validate_email)
+    # Atributos de segmentação dos dados
+    grupo_empresarial: uuid.UUID = DTOField(
+        resume=True, not_null=True, partition_data=True)
+    tenant: int = DTOField(resume=True, not_null=True, partition_data=True)
+
+CREATE TABLE ns.contatosemails (
+	id uuid NOT NULL DEFAULT uuid_generate_v4(),
+	pessoa_id uuid NULL,
+	contato_id uuid NULL,
+	email varchar(100) NULL,
+	recebe_nfse bool NULL DEFAULT false,
+	envia_nfse_prefeitura bool NULL DEFAULT false,
+	recebe_nfe bool NULL DEFAULT false,
+	envia_nfe_receita bool NULL DEFAULT false,
+	recebe_boleto bool NULL DEFAULT false,
+	recebe_pedido bool NULL DEFAULT false,
+	recebe_cotacao_compra bool NULL DEFAULT false,
+	lastupdate timestamp NULL DEFAULT now(),
+	recebe_mala_direta bool NULL DEFAULT false,
+	recebe_fatura_locacao bool NULL DEFAULT false,
+	principal bool NOT NULL DEFAULT false,
+	tenant int8 NULL,
+	CONSTRAINT pessoasemails_pk PRIMARY KEY (id),
+	CONSTRAINT contatossemails_contato_id_contato_fk FOREIGN KEY (contato_id) REFERENCES ns.contatos(id) ON DELETE CASCADE DEFERRABLE,
+	CONSTRAINT pessoasemails_pessoa_id_pessoa_fk FOREIGN KEY (pessoa_id) REFERENCES ns.pessoas(id) ON DELETE CASCADE DEFERRABLE
+);
+
+
+import datetime
+import uuid
+
+from nsj_rest_lib.decorator.dto import DTO
+from nsj_rest_lib.descriptor.dto_field import DTOField, DTOFieldFilter
+from nsj_rest_lib.descriptor.dto_field import DTOField
+from nsj_rest_lib.descriptor.dto_field_validators import DTOFieldValidators
+from nsj_rest_lib.descriptor.filter_operator import FilterOperator
+from nsj_rest_lib.dto.dto_base import DTOBase
+
+
+@DTO()
+class ContatoEmailERP3DTO(DTOBase):
+    id: uuid.UUID = DTOField(
+        pk=True,
+        resume=True,
+        not_null=True,
+        default_value=uuid.uuid4,
+        strip=True,
+        min=36,
+        max=36,
+        validator=DTOFieldValidators().validate_uuid,
+    )
+    pessoa_id: uuid.UUID = DTOField()
+    email: str = DTOField(resume=True, max=100, not_null=True, min=1, max=100, strip=True)
+    recebe_nfse: bool = DTOField(default_value=False)
+    envia_nfse_prefeitura: bool = DTOField(default_value=False)
+    recebe_nfe: bool = DTOField(default_value=False)
+    envia_nfe_receita: bool = DTOField(default_value=False)
+    recebe_boleto: bool = DTOField(default_value=False)
+    recebe_pedido: bool = DTOField(default_value=False)
+    recebe_cotacao_compra: bool = DTOField(default_value=False)
+    recebe_mala_direta: bool = DTOField(default_value=False)
+    recebe_fatura_locacao: bool = DTOField(default_value=False)
+    principal: bool = DTOField(not_null=True, default_value=False)
+
+    # Atributos de auditoria
+    atualizado_em: datetime.datetime = DTOField(
+        resume=True,
+        filters=[
+            DTOFieldFilter("atualizado_apos", FilterOperator.GREATER_THAN),
+            DTOFieldFilter("atualizado_antes", FilterOperator.LESS_THAN),
+        ],
+        default_value=datetime.datetime.now,
+        entity_field="lastupdate"
+    )
+
+
+CREATE TABLE ns.contatos (
+	nome varchar(150) NULL,
+	nascimento date NULL,
+	cargo varchar(100) NULL,
+	sexomasculino bool NULL,
+	observacao varchar(255) NULL,
+	email varchar(100) NULL,
+	lastupdate timestamp NULL DEFAULT now(),
+	primeironome varchar(50) NULL,
+	sobrenome varchar(100) NULL,
+	id uuid NOT NULL DEFAULT uuid_generate_v4(),
+	id_pessoa uuid NULL,
+	cpf varchar(14) NULL,
+	responsavellegal bool NOT NULL DEFAULT false,
+	principal bool NULL,
+	titulo varchar(10) NULL,
+	tenant int8 NULL,
+	decisor bool NULL,
+	influenciador bool NULL,
+	id_pessoafisica uuid NULL,
+	CONSTRAINT "PK_contatos_id" PRIMARY KEY (id),
+	CONSTRAINT "FK_contatos_pessoasfisicass" FOREIGN KEY (id_pessoafisica) REFERENCES ns.pessoasfisicas(pessoafisica) ON DELETE CASCADE DEFERRABLE,
+	CONSTRAINT "FK_ns.contatos_id_pessoa" FOREIGN KEY (id_pessoa) REFERENCES ns.pessoas(id) ON DELETE CASCADE ON UPDATE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+
+
+
+import datetime
+import uuid
+
+from nsj_rest_lib.decorator.dto import DTO
+from nsj_rest_lib.descriptor.dto_field import DTOField, DTOFieldFilter
+from nsj_rest_lib.descriptor.dto_field_validators import DTOFieldValidators
+from nsj_rest_lib.descriptor.filter_operator import FilterOperator
+from nsj_rest_lib.dto.dto_base import DTOBase
+from nasajon.enumerators.contato_sexo_erp3 import ContatoSexoERP3
+
+@DTO()
+class ContatoERP3DTO(DTOBase):
+
+    # Atributos da entidade
+    id: uuid.UUID = DTOField(
+        resume=True,
+        pk=True,
+        not_null=True,
+        strip=True,
+        min=36,
+        max=36,
+        validator=DTOFieldValidators().validate_uuid,
+    )
+    nome: str = DTOField(
+        resume=True,
+        strip=True,
+        min=1,
+        max=150,
+    )
+    nascimento: datetime.date = DTOField(
+        resume=True,
+    )
+    cargo: str = DTOField(
+        strip=True,
+        min=1,
+        max=100,
+    )
+    sexo: ContatoSexoERP3 = DTOField(
+        resume=True,
+    )
+    observacao: str = DTOField(
+        strip=True,
+        min=1,
+        max=255,
+    )
+    email: str = DTOField(
+        strip=True,
+        min=1,
+        max=100,
+    )
+    primeiro_nome: str = DTOField(
+        resume=True,
+        strip=True,
+        min=1,
+        max=50,
+        entity_field="primeironome"
+    )
+    sobre_nome: str = DTOField(
+        resume=True,
+        strip=True,
+        min=1,
+        max=50,
+        entity_field="sobrenome"
+    )
+    # id_pessoa: uuid.UUID
+    cpf: str = DTOField(
+        resume=True,
+        strip=True,
+        min=1,
+        max=14,
+        validator=DTOFieldValidators().validate_cpf,
+    )
+    responsavel_legal: bool = DTOField(
+        entity_field="responsavellegal"
+    )
+    principal: bool = DTOField()
+    titulo: str = DTOField(
+        strip=True,
+        min=1,
+        max=10,
+    )
+    decisor: bool = DTOField()
+    influenciador: bool = DTOField()
+    
+    # Atributos de auditoria
+    atualizado_em: datetime.datetime = DTOField(
+        resume=True,
+        filters=[
+            DTOFieldFilter("atualizado_apos", FilterOperator.GREATER_THAN),
+            DTOFieldFilter("atualizado_antes", FilterOperator.LESS_THAN),
+        ],
+        default_value=datetime.datetime.now,
+        entity_field="lastupdate"
+    )
+
+
+
+CREATE TABLE ns.enderecos (
+	tipologradouro varchar(10) NULL,
+	logradouro varchar(150) NULL,
+	numero varchar(10) NULL,
+	complemento varchar(60) NULL,
+	cep varchar(15) NULL,
+	bairro varchar(60) NULL,
+	tipoendereco int2 NULL,
+	ufexterior varchar(2) NULL,
+	enderecopadrao int2 NULL,
+	uf varchar(2) NULL,
+	pais varchar(5) NULL,
+	ibge varchar(8) NULL,
+	cidade varchar(60) NULL,
+	referencia varchar NULL,
+	versao int8 NULL DEFAULT 1,
+	endereco uuid NOT NULL DEFAULT uuid_generate_v4(),
+	id_pessoa uuid NULL,
+	lastupdate timestamp NULL DEFAULT now(),
+	tenant int8 NULL,
+	id_pessoafisica uuid NULL,
+	id_proposta uuid NULL,
+	id_ordemservico uuid NULL,
+	CONSTRAINT "PK_enderecos_endereco" PRIMARY KEY (endereco),
+	CONSTRAINT "FK_enderecos_pessoasfisicas" FOREIGN KEY (id_pessoafisica) REFERENCES ns.pessoasfisicas(pessoafisica) ON DELETE CASCADE DEFERRABLE,
+	CONSTRAINT "FK_ns.enderecos.id_ordemservico" FOREIGN KEY (id_ordemservico) REFERENCES servicos.ordensservicos(ordemservico),
+	CONSTRAINT "FK_ns.enderecos.id_proposta" FOREIGN KEY (id_proposta) REFERENCES crm.negociospropostas(propostaopcao) ON DELETE CASCADE,
+	CONSTRAINT "FK_ns.enderecos_ibge" FOREIGN KEY (ibge) REFERENCES ns.municipios(ibge) DEFERRABLE INITIALLY DEFERRED,
+	CONSTRAINT "FK_ns.enderecos_id_pessoa" FOREIGN KEY (id_pessoa) REFERENCES ns.pessoas(id) ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED,
+	CONSTRAINT "FK_ns.enderecos_pais" FOREIGN KEY (pais) REFERENCES ns.paises(pais) DEFERRABLE INITIALLY DEFERRED
+);
+
+
+
+import datetime
+import uuid
+
+from nsj_rest_lib.decorator.dto import DTO
+from nsj_rest_lib.descriptor.dto_field import DTOField, DTOFieldFilter
+from nsj_rest_lib.descriptor.dto_field_validators import DTOFieldValidators
+from nsj_rest_lib.descriptor.filter_operator import FilterOperator
+from nsj_rest_lib.dto.dto_base import DTOBase
+
+from nasajon.enumerators.tipo_logradouro import TipoLogradouro
+from nasajon.enumerators.uf import UF
+
+
+def convert_padrao_to_entity(dto_value: any, dto: DTOBase) -> dict[str, any]:
+    return {"enderecopadrao": 1 if bool(dto_value) else 0}
+
+
+def convert_padrao_from_entity(
+    entity_value: any, entity_fields: dict[str, any]
+) -> dict[str, any]:
+    if entity_value is None:
+        entity_value = ""
+
+    return {"padrao": True if int(entity_value) == 1 else False}
+
+
+@DTO()
+class EnderecoERP3DTO(DTOBase):
+    # Atributos da entidade
+    endereco: uuid.UUID = DTOField(
+        resume=True,
+        pk=True,
+        not_null=True,
+        default_value=uuid.uuid4,
+        strip=True,
+        min=36,
+        max=36,
+        validator=DTOFieldValidators().validate_uuid,
+    )
+    tipo_logradouro: TipoLogradouro = DTOField(
+        resume=True, strip=True, min=1, max=10, entity_field="tipologradouro"
+    )
+    logradouro: str = DTOField(resume=True, strip=True, min=1, max=150)
+    numero: str = DTOField(resume=True, strip=True, min=1, max=10)
+    complemento: str = DTOField(resume=True, strip=True, min=1, max=60)
+    cep: str = DTOField(resume=True, strip=True, min=1, max=15)
+    bairro: str = DTOField(resume=True, strip=True, min=1, max=60)
+    tipo_endereco: int = DTOField(resume=True, entity_field="tipoendereco")
+    uf_exterior: str = DTOField(strip=True, min=2, max=2, entity_field="ufexterior")
+    padrao: bool = DTOField(
+        entity_field="enderecopadrao",
+        convert_from_entity=convert_padrao_from_entity,
+        convert_to_entity=convert_padrao_to_entity,
+    )
+    uf: UF = DTOField(resume=True, strip=True, min=2, max=2)
+    pais: str = DTOField(strip=True, min=1, max=5)
+    ibge: str = DTOField(resume=True, strip=True, min=1, max=8)
+    cidade: str = DTOField(resume=True, strip=True, min=1, max=60)
+    referencia: str = DTOField()
+    versao: int = DTOField(default_value=1)
+    id_proposta: uuid.UUID = DTOField()
+    id_ordemservico: uuid.UUID = DTOField()
+
+    # Atributos de auditoria
+    atualizado_em: datetime.datetime = DTOField(
+        resume=True,
+        filters=[
+            DTOFieldFilter("atualizado_apos", FilterOperator.GREATER_THAN),
+            DTOFieldFilter("atualizado_antes", FilterOperator.LESS_THAN),
+        ],
+        default_value=datetime.datetime.now,
+        entity_field="lastupdate",
+    )

@@ -3,7 +3,7 @@ from zipfile import ZipFile
 import os
 import pathlib
 
-IGNORE = ['.env', '.venv', 'dist', '.git', '.gitignore', 'empacotar.py']
+IGNORE = [".env", ".venv", "dist", ".git", ".gitignore", "empacotar.py"]
 
 
 def main():
@@ -11,7 +11,7 @@ def main():
     if not os.path.exists(dir_dist):
         os.makedirs(dir_dist)
 
-    with ZipFile('./dist/suporte-console.zip', 'w') as zip:
+    with ZipFile("./dist/arquitetura-cmd.zip", "w") as zip:
 
         for root, _, files in os.walk("./"):
             pula = False
@@ -29,10 +29,7 @@ def main():
                 if file in IGNORE:
                     continue
 
-                zip.write(
-                    os.path.join(root, file),
-                    os.path.join(root_zip, file)
-                )
+                zip.write(os.path.join(root, file), os.path.join(root_zip, file))
 
         # zip.write("./src/__main__.py", "__main__.py")
 

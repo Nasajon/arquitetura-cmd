@@ -1,0 +1,276 @@
+Tome como exemplo as tabelas abaixo, e o respectivas Entities, que foram geradas a partir das mesmas:
+
+Tabela:
+
+#####
+CREATE TABLE ns.pessoas (
+	pessoa varchar(30) NOT NULL,
+	datacadastro date NULL,
+	nome varchar(150) NULL,
+	nomefantasia varchar(150) NULL,
+	cnpj varchar(18) NULL,
+	caepf varchar(18) NULL,
+	inscricaoestadual varchar(20) NULL,
+	inscestsubstituto varchar(20) NULL,
+	inscricaomunicipal varchar(20) NULL,
+	site varchar(150) NULL,
+	bloqueado bool NOT NULL DEFAULT false,
+	contribuinteicms bool NULL,
+	contribuinteipi bool NULL,
+	rntrc varchar(14) NULL,
+	produtorrural bool NULL,
+	substitutomunicipal bool NULL,
+	tiposimples int4 NULL,
+	qualificacao int4 NULL,
+	icmssimp int4 NULL,
+	regimereceita int4 NULL,
+	percentualtaxaservicoscooperativa float8 NULL,
+	percentualinsscooperativa float8 NULL,
+	lastupdate timestamp NULL DEFAULT now(),
+	orgaoemissor varchar(10) NULL,
+	tipoicms int2 NULL,
+	codigocontabilcliente varchar(20) NULL,
+	anotacao text NULL,
+	datacliente date NULL,
+	datafornecedor date NULL,
+	datavendedor date NULL,
+	leadativado int2 NOT NULL DEFAULT 0,
+	clienteativado int2 NOT NULL DEFAULT 0,
+	fornecedorativado int2 NOT NULL DEFAULT 0,
+	vendedorativado int2 NOT NULL DEFAULT 0,
+	transportadoraativado int2 NOT NULL DEFAULT 0,
+	pagamentounificado int2 NULL,
+	tipovencimento int2 NULL,
+	diavencimento int2 NULL,
+	notaantecipadacobranca int2 NULL,
+	emailcobranca varchar(100) NULL,
+	enviarnfeporemail int2 NULL,
+	pontofidelidade float8 NULL,
+	retempis int2 NULL,
+	retemcofins int2 NULL,
+	retemcsll int2 NULL,
+	retemirrf int2 NULL,
+	retemiss int2 NULL,
+	tipolead int2 NULL,
+	descricao varchar(150) NULL,
+	totalfuncionarios int4 NULL,
+	receitaanual float4 NULL,
+	datacriacao timestamp NULL,
+	codigocontabilfornecedor varchar(20) NULL,
+	banco varchar(3) NULL,
+	agencianumero varchar(10) NULL,
+	agencianome varchar(50) NULL,
+	contanumero varchar(20) NULL,
+	podeparticiparagendamento int2 NOT NULL DEFAULT 0,
+	codigocontabiltransportadora varchar(20) NULL,
+	datatransportadora date NULL,
+	cobrancaaposservico int2 NULL,
+	prorataantecipada int2 NULL,
+	celulavenda uuid NULL,
+	classificacaolead uuid NULL,
+	midiaorigem uuid NULL,
+	parcelamento uuid NULL,
+	promocaolead uuid NULL,
+	representante uuid NULL,
+	segmentoatuacao uuid NULL,
+	statuslead uuid NULL,
+	agencia uuid NULL,
+	centrocusto uuid NULL,
+	id_grupo uuid NULL,
+	idclasspessoacliente uuid NULL,
+	idclasspessoafornecedor uuid NULL,
+	idclasspessoatransportadora uuid NULL,
+	idclasspessoavendedor uuid NULL,
+	classificado uuid NULL,
+	id uuid NOT NULL DEFAULT uuid_generate_v4(),
+	captador uuid NULL,
+	vendedor uuid NULL,
+	usuariovendedor uuid NULL,
+	criador uuid NULL,
+	contatoativado int2 NOT NULL DEFAULT 0,
+	id_receitadiferenciada uuid NULL,
+	id_despesadiferenciada uuid NULL,
+	tecnicoativado int2 NOT NULL DEFAULT 0,
+	tpcontacompra int4 NULL,
+	fichaativado int2 NOT NULL DEFAULT 1,
+	categoriatecnico_id uuid NULL,
+	percentualfaturamentoservico float8 NULL,
+	percentualfaturamentoencargo float8 NULL,
+	percentualfaturamentoiss float8 NULL,
+	percentualfaturamentoretencao float8 NULL,
+	tributoativado int2 NOT NULL DEFAULT 0,
+	valormaxdesconto float8 NULL,
+	id_conta uuid NULL,
+	id_rateiopadrao uuid NULL,
+	enviarboletoporemail int2 NULL DEFAULT 1,
+	concessionariapublica bool NOT NULL DEFAULT false,
+	codigoconcessionaria varchar(4) NULL,
+	id_conta_receber uuid NULL,
+	id_rateiopadrao_receber uuid NULL,
+	id_layoutcobranca uuid NULL,
+	id_cliente_fatura uuid NULL,
+	diafaturamento int4 NULL,
+	diasvencimentofatura int4 NULL,
+	id_formapagamento uuid NULL,
+	aliquotarat float8 NULL,
+	aliquotafap float8 NULL,
+	aliquotaterceiros float8 NULL,
+	templateordemservico uuid NULL,
+	nacionalidade int4 NULL DEFAULT 0,
+	chavegold text NULL,
+	id_faixadecredito uuid NULL,
+	limite_de_credito numeric(20, 4) NULL,
+	importacao_hash text NULL,
+	id_erp int8 NULL DEFAULT nextval('id_erp_pessoas_seq'::regclass),
+	retem_inss bool NULL DEFAULT false,
+	enderecocobrancautilizarenderecoprincipal bool NOT NULL DEFAULT false,
+	enderecoentregautilizarenderecoprincipal bool NOT NULL DEFAULT false,
+	classificado_old uuid NULL,
+	ajuste_cnpj bool NOT NULL DEFAULT false,
+	representantecomercialativado int2 NULL DEFAULT 0,
+	representantetecnicoativado int2 NULL DEFAULT 0,
+	representante_old uuid NULL,
+	representante_tecnico uuid NULL,
+	template_rps uuid NULL,
+	percentualtaxacobrancaterceirizacao numeric(20, 6) NULL,
+	dataultimacompra date NULL,
+	valorultimacompra numeric(20, 2) NULL,
+	contratounificadonacobranca bool NULL DEFAULT false,
+	vendedor_anterior uuid NULL,
+	usarvencimentounificado bool NULL DEFAULT false,
+	diavencimentounificado int4 NULL,
+	projeto uuid NULL,
+	indicadorinscricaoestadual int2 NULL,
+	comissao numeric(20, 2) NULL,
+	json_elementos_controle json NULL,
+	enviarnfseporemail bool NULL DEFAULT false,
+	documentoestrangeiro varchar(20) NULL,
+	id_formapagamento_fornecedor uuid NULL,
+	cnpjsemformato varchar NULL,
+	tipocontrolepagamento int2 NULL DEFAULT 2,
+	situacaopagamento int2 NULL DEFAULT 0,
+	tipoclientepagamento int2 NULL DEFAULT 0,
+	justificativasituacaopagamento varchar(255) NULL,
+	justificativatipoclientepagamento varchar(255) NULL,
+	inscritapaa bool NULL,
+	retem_abaixo_minimo bool NULL DEFAULT false,
+	id_fornecedorfactoring uuid NULL,
+	funcionarioativado int2 NOT NULL DEFAULT 0,
+	contribuinteindividualativado int2 NOT NULL DEFAULT 0,
+	tomadorfolhaativado int2 NOT NULL DEFAULT 0,
+	classificacaofinanceirafrete uuid NULL,
+	classificacaofinanceiraseguro uuid NULL,
+	classificacaofinanceiraoutdesp uuid NULL,
+	notafutura bool NULL DEFAULT false,
+	datasituacaopagamento date NULL,
+	datatipoclientepagamento date NULL,
+	reguacobranca uuid NULL,
+	restricaocobranca1 uuid NULL,
+	restricaocobranca2 uuid NULL,
+	restricaocobranca3 uuid NULL,
+	grupodeparticipante uuid NULL,
+	tipocliente_codigo varchar(20) NULL,
+	tipocliente_descricao varchar(100) NULL,
+	tenant int8 NULL,
+	desabilitadopersona bool NOT NULL DEFAULT false,
+	ajudanteativado int4 NULL,
+	formatributacaofunrural int2 NULL,
+	cnae varchar(7) NULL,
+	valor_comissao int4 NULL,
+	recebimento_comissao int4 NULL,
+	prospectativado int4 NULL,
+	id_transportadora uuid NULL,
+	id_historicopadraoestoque uuid NULL,
+	nascimento date NULL,
+	confirmacao_email varchar(150) NULL,
+	mensagem_de_alerta text NULL,
+	tiponegocio uuid NULL,
+	atividadeicms int4 NULL DEFAULT 0,
+	id_conjunto uuid NULL
+);
+#####
+
+Entity:
+#####
+import datetime
+import uuid
+
+from nasajon.enumerators.qualificacao_pessoa_erp3 import QualificacaoPessoaERP3
+
+from nsj_rest_lib.entity.entity_base import EntityBase
+from nsj_rest_lib.decorator.entity import Entity
+
+
+@Entity(
+    table_name="ns.pessoas",
+    pk_field="id",
+    default_order_fields=["pessoa", "nome", "id"],
+)
+class PessoaERP3Entity(EntityBase):
+    # Atributos gerais
+    id: uuid.UUID = None  # cnpj
+    cnpj: str = None
+    pessoa: str = None  # codigo
+    qualificacao: QualificacaoPessoaERP3 = None
+    nome: str = None
+    nomefantasia: str = None  # nome_alternativo
+    site: str = None
+    bloqueado: bool = None  # inativo
+    # Atributos de pessoas jurídicas
+    rntrc: str = None  # rntc
+    cnae: str = None  # cnae_principal
+    inscricaoestadual: str = None
+    inscestsubstituto: str = None
+    inscricaomunicipal: str = None
+    # Atributos de pessoas físicas
+    caepf: str = None
+    nit: str = None
+    nascimento: datetime.date = None
+    identidade: str = None
+    orgaoemissor: str = None
+    # Atributos de auditoria
+    datacadastro: datetime.date = None
+    lastupdate: datetime.datetime = None
+    clienteativado: int = None
+#####
+
+Tabela:
+#####
+CREATE TABLE ns.gruposempresariais (
+	codigo varchar(30) NOT NULL,
+	descricao varchar(150) NULL,
+	usagrade int2 NULL,
+	grupoempresarial uuid NOT NULL DEFAULT uuid_generate_v4(),
+	lastupdate timestamp NULL DEFAULT now(),
+	modogestaopatrimonial bool NOT NULL DEFAULT false,
+	escopoworkflow int8 NULL,
+	id_erp int8 NULL,
+	modocomissoes int4 NULL,
+	modo_calculo_pmc int4 NOT NULL DEFAULT 0,
+	importacao_hash varchar NULL,
+	tenant int8 NULL DEFAULT 0,
+	inativo bool NULL
+);
+#####
+
+Entity:
+#####
+import datetime
+import uuid
+
+from nsj_rest_lib.entity.entity_base import EntityBase
+from nsj_rest_lib.decorator.entity import Entity
+
+
+@Entity(
+    table_name="ns.gruposempresariais",
+    pk_field="grupoempresarial",
+    default_order_fields=["codigo"],
+)
+class GrupoEmpresarialERP3Entity(EntityBase):
+    grupoempresarial: uuid.UUID = None
+    codigo: str = None
+    descricao: str = None
+    escopoworkflow: int = None
+    atualizado_em: datetime.datetime = None
+#####

@@ -1,1 +1,1 @@
-pyinstaller --hidden-import pg8000 --onefile --console --name "suporte-console" ./__main__.py
+pyinstaller --hidden-import pg8000 --onefile --console --name "arquitetura-cmd" ./__main__.py
