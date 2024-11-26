@@ -34,7 +34,7 @@ class RestLibEntityCommand(Command):
                 ddl_content = f.read()
 
             # Lendo a entrada de exemplos a serem enviados ao ChatGPT
-            URL_EXEMPLOS = "https://raw.githubusercontent.com/Nasajon/arquitetura-cmd/main/arquitetura_cmd/rest_lib_entity/exemplos_para_chatgpt.txt"
+            URL_EXEMPLOS = "https://raw.githubusercontent.com/Nasajon/arquitetura-cmd/refs/heads/main/arquitetura_cmd/rest_lib_entity/exemplos_para_chatgpt.txt"
             resp = requests.get(URL_EXEMPLOS, timeout=5)
             resp.raise_for_status()
             exemplos = resp.text
